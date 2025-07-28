@@ -1,0 +1,208 @@
+function updateGreeting() {
+    const time = document.getElementById("time");
+    const hour = new Date().getHours();
+    if (hour < 12) {
+        time.textContent = "Good morning!";
+    } else if (hour < 18) {
+        time.textContent = "Good afternoon!";
+    } else {
+        time.textContent = "Good evening!";
+    }
+}
+updateGreeting(); 
+// Exercise 2
+function toggle() {
+    const skills = document.querySelectorAll(".skill-item");
+    const colors = ["bg-primary", "bg-success", "bg-danger", "bg-warning", "bg-info", "bg-dark"];
+
+    skills.forEach(skill => {
+      // Remove all Bootstrap background color classes
+      skill.classList.remove("bg-primary", "bg-success", "bg-danger", "bg-warning", "bg-info", "bg-dark");
+
+      
+      const newColor = colors[Math.floor(Math.random() * colors.length)];
+      skill.classList.add(newColor);
+
+      // Adjust text color for better readability
+      if (newColor === "bg-warning" || newColor === "bg-info") {
+        skill.classList.add("text-dark");
+      } else {
+        skill.classList.add("text-white");
+      }
+    });
+  }
+
+// Exercise 3a
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("contact-form").addEventListener("submit", function(event) {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message").value.trim();
+    if (name === "" || email === "" || message === "") {
+     alert("Please fill out all fields before submitting.");
+      event.preventDefault(); 
+    }
+  });
+});
+
+// Exercise 4
+let count = 0; 
+
+  function incrementCounter() {
+    count++; 
+    document.getElementById("counter").textContent = count;}
+
+/*
+var Link = document.getElementById("link");
+var currentKeys = [];//get an array ready to record currently pressed keys
+var UP = 'w';
+var LEFT = 'a';
+var DOWN = 's';
+var RIGHT = 'd';
+
+var canmoveleft=true; 
+// you'll be free to move left if no collisions are happening on your left, etc
+var canmoveright=true; 
+var canmoveup=true; 
+var canmovedown=true;
+
+var Obstacle = document.getElementById("block");
+
+function isCrashing(Block1, Block2) {
+	// the genius formula we'll use to check if Link (Block1) is crashing into the obstacle (Block2)
+	return !(
+		Block1.bottom < Block2.top ||
+		Block1.top>Block2.bottom ||
+		Block1.right < Block2.left ||
+		Block1.left > Block2.right
+	); // "if none of these are true, we're crashing"
+}
+
+function checkforcrashes(){
+
+	var Me = Link.getBoundingClientRect();
+	// getBoundingClientRect gives the pixel position of the block's top and left (but doesn't include the bottom or right. Got to add that manually, below)
+	Me.bottom = Me.top + Me.height; 
+	// bottom can be calculated like this and added to the 'Me' group
+	Me.right = Me.left + Me.width;
+
+	// get the same location info of the block:
+	var Block = Obstacle.getBoundingClientRect();
+	Block.bottom = Block.top + Block.height;
+	Block.right = Block.left + Block.width;
+
+	//get the distances from each block side:
+	var top = Math.abs(Me.bottom - Block.top);
+	var bottom = Math.abs(Me.top - Block.bottom);
+	var left = Math.abs(Me.right - Block.left);
+	var right = Math.abs(Me.left - Block.right); 
+
+	var shortestDistance = Math.min(top, bottom, left, right);
+
+	var sideOfBlockWereHitting =
+	shortestDistance === top ? "top"
+		: shortestDistance === bottom ? "bottom"
+			: shortestDistance === left ? "left"
+				: "right";
+	
+	if (isCrashing(Me, Block) && sideOfBlockWereHitting === "bottom") {
+		canmoveup = false;
+		// "if we're crashing into the block and the shortest distance is from the bottom, stop Link from moving up"
+	}
+	else if (isCrashing(Me, Block) && sideOfBlockWereHitting === "top") {
+		canmovedown = false;
+	} else if (isCrashing(Me, Block) && sideOfBlockWereHitting === "left") {
+		canmoveright = false;
+	} else if (isCrashing(Me, Block) && sideOfBlockWereHitting === "right") {
+		canmoveleft = false;
+	}
+	else {
+	// and finally if we're not crashing anywhere, clear any previously stopped directions and allow full movement:
+		canmoveleft = true;
+		canmoveright = true;
+		canmoveup = true;
+		canmovedown = true;
+	}
+
+}
+
+function gameLoop(){
+
+	var leftpos = parseInt(Link.style.left);
+	var toppos = parseInt(Link.style.top);
+	
+	if (currentKeys[LEFT] && canmoveleft) {
+		Link.style.left = leftpos - 3 + "px";
+	}
+	if (currentKeys[RIGHT] && canmoveright) {
+		Link.style.left = leftpos + 3 + "px";
+	}
+	if (currentKeys[UP] && canmoveup) {
+		Link.style.top = toppos - 3 + "px";
+	}
+	if (currentKeys[DOWN] && canmovedown) {
+		Link.style.top = toppos + 3 + "px";
+	}
+
+	checkforcrashes();
+
+	window.requestAnimationFrame(gameLoop);
+}
+
+document.body.addEventListener(
+	"keydown", 
+	function(infoAboutTheKey){
+		currentKeys[infoAboutTheKey.key] = true;
+		//add the key's name to the array of currently pressed keys
+		Link.setAttribute('data-key-'+infoAboutTheKey.key, true);
+		//point him in the direction he's walking with Data Attributes & the CSS
+});
+
+document.body.addEventListener(
+	"keyup",
+	function(infoAboutTheKey){
+		currentKeys[infoAboutTheKey.key] = false; 
+		Link.setAttribute('data-key-'+infoAboutTheKey.key, ''); 
+		//blank out this key's data-key attribute, stop pointing him in the direction he's no longer walking in
+});
+
+window.addEventListener(
+	"load", 
+	function(){
+		gameLoop();
+});
+
+//animation
+  const link = document.getElementById('link');
+    let x=200, y=200, frame=0;
+    let state = 'idle'; // or 'walk'
+    const keys = {};
+
+    document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+    document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+    function updateFrame() {
+      frame = (frame + 1) % 4;
+      const img = state === 'walk'
+                  ? `walk_${frame+1}.png`
+                  : `idle_${frame+1}.png`;
+      link.style.backgroundImage = `url("public/sprites/${img}")`;
+    }
+
+    function moveCharacter() {
+      let moving = false;
+      if (keys['w']) { y -= 2; moving = true; }
+      if (keys['s']) { y += 2; moving = true; }
+      if (keys['a']) { x -= 2; moving = true; }
+      if (keys['d']) { x += 2; moving = true; }
+
+      link.style.left = x + 'px';
+      link.style.top = y + 'px';
+
+      state = moving ? 'walk' : 'idle';
+    }
+
+    setInterval(() => {
+      moveCharacter();
+      updateFrame();
+    }, 150); */
